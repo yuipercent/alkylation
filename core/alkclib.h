@@ -1,8 +1,8 @@
-#include <X11/Xlib.h>
 #include <stdlib.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "eventdb.h"
 
 #ifndef ALKC_FRONTENDMODE
 
@@ -115,5 +115,17 @@
 	 *							\
 	 * All functions inputed here should be			\
 	 * extern inline functions				\
+	 * 							\
+	 * - - - - - - - - - - - - - - - - - - - - - - - - - - -\
+	 * Defined functions are the following:			\
+	 * 							\
+	 * -> ALKC_INITWD					\
+	 *   # returns an initialized window			\
+	 * -> ALKC_OPENWD					\
+	 *   # preconfig window for opening			\
+	 * -> ALKC_LOOPWD					\
+	 *   # Returns a bool of if the window shall still run	\
+	 *   # AND extracts the current event			\
+	 *   							\
 	 * -----------------------------------------------------\
 */
