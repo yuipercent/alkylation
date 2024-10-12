@@ -4,16 +4,14 @@
 #include "../core/alkclib.h"
 #endif
 
-// Structure pour gérer la fenêtre
 typedef struct STDWD {
-    HWND hwnd; // Handle de la fenêtre
+    HWND hwnd; 
     MSG msg;
     UINT uMsg;
     WPARAM wParam;
     LPARAM lParam;
 } STDWD;
 
-// Prototype de la fonction de traitement des messages
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 STDWD INITWD(int dx, int dy) {
@@ -56,7 +54,6 @@ STDWD INITWD(int dx, int dy) {
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_DESTROY:
-        printf("kcé!\n");
         PostQuitMessage(0); 
         return 0;
     }
@@ -66,7 +63,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 void OPENWD(STDWD wd) {
     if (wd.hwnd != NULL) {
-        printf("aaaaaaa!\n");
         ShowWindow(wd.hwnd, SW_SHOW); 
         UpdateWindow(wd.hwnd);        
     }
@@ -75,11 +71,8 @@ void OPENWD(STDWD wd) {
 void EXTRACTEVENTS(STDWD wd) {
     if (wd.hwnd != NULL) {
         WindowProc(wd.hwnd, wd.uMsg, wd.wParam, wd.lParam);
-    }else{
-        printf("samerlapute!\n");
     }
 }
 
-// Macro pour définir les paquets d'applications
 ALKCDEFINE_WDPACKAGE(STDWD, INITWD, OPENWD, EXTRACTEVENTS);
 ALKCDEFINE_EVENTMAPPING(MSG, WPARAM, 60);
