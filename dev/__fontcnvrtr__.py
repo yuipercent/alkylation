@@ -33,11 +33,11 @@ class tarchar():
     def printvisu(self):
         toreturn = "#"
         for p,op in enumerate(self.charbin):
-            
+            # LOops the 8 bits in the byte
             for p_i in range(8):
                 if (p*8+p_i)%self.dx == 0:
                     toreturn += "#\n#"
-                currentbin = (op >> p_i)%2
+                currentbin = (op >> p_i)%2  # Reads the bin at index p_i
                 if currentbin == 0:
                     toreturn += "##"
                 else:
@@ -58,15 +58,21 @@ class fontsurf():
         """Get dy of the character at position px;py"""
         dy = 0
         while True:
+    
             if py+dy >= self.size[1]:
                 return -1
+    
             elif self.fontsurf[px][py+dy] == -65536:
-                break
+                break   # A -65536 pixel AKA rgb(255,0,0) means the end of the tarchar
+    
             elif dy > 9999:
                 raise Exception("Couldn't find -65536 to get dy, bad png format")
+
             dy += 1
         return dy-1
+
     def __getdx(self,px: int ,py: int ) -> int:
+        """Checks the length of the line on top of the char to get dx"""
         if not (self.fontsurf[px][py] == -16776961):
             raise Exception("the pixel at "+int(px)+";"+int(dy)+" is not a dx marker (of color rgb#FF0000)")
         sx = 0
@@ -77,13 +83,17 @@ class fontsurf():
     def __chartotarfont(self,px: int,py: int,dx: int,dy: int):
         a = list() # each bit represend a pixel, it's sort of a voxel array but 2d and for font
         toappend = numpy.uint8(0)
+
         for p in range(ceil(dx*dy/8)):
             toappend = numpy.uint8(0)
+            # Loops all 8 bits in the byte
             for p_i in range(0,8):
                 p_f = p*8+p_i
+                # Appends the read binary if not Out of bound
                 if p_f < dx*dy: # make sur its not oob
                     tobitwop = numpy.uint8(self.fontsurf[px+p_f%dx][py+p_f//dx] != -1)<<p_i
                     toappend = toappend | tobitwop
+
             a.append(toappend)  # appends the uint8
         return tarchar(a,dx,dy)
 
@@ -136,11 +146,11 @@ class fontsurf():
             letterid = input(bcolors.OKGREEN+"[TARFNTmkr]"+bcolors.ENDC+":"+bcolors.OKCYAN+" Input letterid/letter"+bcolors.ENDC+": ")
             # ====== HISTORY FUNCTION ========
             if letterid == ":b":    # go back function
-                self.hpx.pop(-1)
+                self.hpx.pop(-1)    # Delete the input generated with :b
                 self.hpy.pop(-1)
                 py = self.hpx[-1]
                 px = self.hpx[-1]
-                self.hpx.pop(-1)
+                self.hpx.pop(-1)    # Delete the previous input
                 self.hpy.pop(-1)
                 del self.assigns[self.hlid[-1]]
                 self.hlid.pop(-1)
@@ -155,10 +165,11 @@ class fontsurf():
             self.__delines(toprint.count("\n")+2)
             success = self.assign(letterid,cchar)
             if success:
-                px += dx+1                  # moves to the next letter
+                px += dx+2                  # moves to the next letter
 
 
     def convert(self):
+        """Launches the conversion into .trfnt file"""
         print("\n==================================================================\n --- END OF ASSIGNEMENT : --- \n==================================================================\n"+bcolors.OKGREEN+"[Starting conversion]"+bcolors.ENDC+"...")
         outputpath = abspath(getsourcefile(lambda:0)).replace("__fontcnvrtr__.py","")+"tarfnt"+self.name+".trfnt"
         print("   Using location: "+outputpath)
@@ -181,8 +192,9 @@ class fontsurf():
                     intermediary = ceil(i/charbinlen*20)
                     toprint = toprint + termlen*" "+(cpercent)+(3-len(cpercent))*" "+"% ["+intermediary*"#"+(20-intermediary)*"-"+"]"
                     print(tcmd.GO_UP,tcmd.CLEAR,tcmd.CLEAR,toprint)
-                    trfnt.write(byte)
+                    trfnt.write(byte)   # Refresh the loading bar
         print(bcolors.OKGREEN+"[CONVERSION SUCCESS]"+bcolors.ENDC)
+
 #==================================================================================
 def launchconversion(inp : str):
     optindex = inp.find("'")
