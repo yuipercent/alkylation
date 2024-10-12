@@ -25,14 +25,15 @@ class tcmd:
     CLEAR = "\x1b[2K"
 
 class tarchar():
+    """A voxel representation of the characaters"""
     def __init__(self,charbin : list[numpy.uint8],dx,dy):
-        self.charbin = charbin
+        self.charbin = charbin    # a Uint8 where each bit represents wether the pixel is filled or not
         self.dx = dx
         self.dy = dy
     def printvisu(self):
-        ci = 0
         toreturn = "#"
         for p,op in enumerate(self.charbin):
+            
             for p_i in range(8):
                 if (p*8+p_i)%self.dx == 0:
                     toreturn += "#\n#"
@@ -48,10 +49,10 @@ class fontsurf():
         self.name :                  str = path[path.rfind("/"):path.rfind(".")]
         self.fontsurf :   pygame.Surface = pygame.surfarray.array2d(pygame.image.load(path))
         self.size :           tuple[int] = self.fontsurf.shape
-        self.assigns : dict[int,tarchar] = dict()
-        self.hpx :             list[int] = list()
-        self.hpy :             list[int] = list()
-        self.hlid :            list[int] = list()
+        self.assigns : dict[int,tarchar] = dict()    # ASCII code -> Tarchar
+        self.hpx :             list[int] = list()    # Historic of px on the raw image
+        self.hpy :             list[int] = list()    # Same but for py
+        self.hlid :            list[int] = list()    # Same but for ASCII codes assignements
 
     def __getdy(self,px: int ,py: int ) -> int:
         """Get dy of the character at position px;py"""
