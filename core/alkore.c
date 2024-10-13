@@ -13,20 +13,19 @@ VT_naphtha* CNaphtA,const int cFORMAT,int Padding) {				//
 	int lSize = CNaphtA->FORMAT.Size;					//
 										//
 	CNaphtA->FORMAT.StorageFormat = cFORMAT;				//
-	CNaphtA->offsetX = ( 8 - ( lSize % 8 ));				//
-	CNaphtA->bytes_per_line = ( lSize ) * ldx;				//
-	CNaphtA->padding = Padding;						//
-	CNaphtA->naphtarray_size = 						//
-	(CNaphtA->padding + lSize ) * ldx;					//
+	CNaphtA->offsetX	 = ( 8 - ( lSize % 8 ));			//
+	CNaphtA->bytes_per_line	 = ( lSize ) * ldx;				//
+	CNaphtA->padding	 = Padding;					//
+	CNaphtA->naphtarray_size = (CNaphtA->padding + lSize ) * ldx;		//
 };										//
 
 VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT) {
 	VT_naphtha* CNaphtA =
 	(VT_naphtha*)malloc(sizeof(VT_naphtha));
 
-	CNaphtA->LOCK = true;
-	CNaphtA->DX = 	sizeX;
-	CNaphtA->DY = 	sizeY;
+	CNaphtA->LOCK 	= true;
+	CNaphtA->DX 	= sizeX;
+	CNaphtA->DY 	= sizeY;
 
 	VTINIT_naphtArrayFORMAT(CNaphtA,cFORMAT,0);
 	return CNaphtA;
