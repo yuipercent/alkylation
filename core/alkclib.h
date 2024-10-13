@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "eventlib.h"
-
 #ifndef ALKC_FRONTENDMODE
 
 #include "alkore.h"
@@ -75,7 +73,6 @@
 #define ALKCDEFINE_WDPACKAGE(WDClass,initfc,openfc,loopfc)	\
 								\
 	typedef struct ALKC_STDWD{				\
-		ALKI_EVENTLIST*	Elist;				\
 		WDClass*	WDWRAPPER;			\
 		bool 		running;			\
 	}ALKC_STDWD;						\
