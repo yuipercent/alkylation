@@ -78,9 +78,9 @@ typedef struct VT_naphtha {							//
 //--------------------------- AFFILIATED FUNCTIONS -----------------------------//
 										//
 static void VTINIT_naphtArrayFORMAT(						//
-VT_naphtha CNaphtA,const int cFORMAT,int Padding);				//
+VT_naphtha* CNaphtA,const int cFORMAT,int Padding);				//
 										//
-VT_naphtha VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT);		//
+VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT);		//
 // Usage : VT_naphtha RandomVariable = VTINIT_naphtha(120,90,RGBA32);		//
 // -----------------------------------------------------------------------------//
 
