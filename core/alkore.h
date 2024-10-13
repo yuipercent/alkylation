@@ -84,4 +84,4 @@ VT_naphtha VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT);		//
 // Usage : VT_naphtha RandomVariable = VTINIT_naphtha(120,90,RGBA32);		//
 // -----------------------------------------------------------------------------//
 
-void VTINIT_mallocnapht(VT_naphtha CNaphtA);
+void VTINIT_mallocnapht(VT_naphtha* CNaphtA);

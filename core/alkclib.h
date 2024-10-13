@@ -2,7 +2,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "eventdb.h"
+
+#include "eventlib.h"
 
 #ifndef ALKC_FRONTENDMODE
 
@@ -74,24 +75,27 @@
 #define ALKCDEFINE_WDPACKAGE(WDClass,initfc,openfc,loopfc)	\
 								\
 	typedef struct ALKC_STDWD{				\
-		WDClass WDWRAPPER;				\
-		bool running;					\
+		ALKI_EVENTLIST*	Elist;				\
+		WDClass*	WDWRAPPER;			\
+		bool 		running;			\
 	}ALKC_STDWD;						\
 								\
-	ALKC_STDWD ALKC_INITWD					\
+	ALKC_STDWD* ALKC_INITWD					\
 	(int dx, int dy){					\
-		ALKC_STDWD toreturn;				\
-		toreturn.WDWRAPPER = initfc(dx,dy);		\
-		toreturn.running = true;			\
+		ALKC_STDWD* toreturn =				\
+		(ALKC_STDWD*)malloc(sizeof(ALKC_STDWD));	\
+								\
+		toreturn->WDWRAPPER	 = initfc(dx,dy);	\
+		toreturn->running	 = true;		\
 		return toreturn;				\
 	};							\
-	void ALKC_OPENWD(ALKC_STDWD wdhold) {			\
-		openfc(wdhold.WDWRAPPER);			\
-		wdhold.running = true;				\
+	void ALKC_OPENWD(ALKC_STDWD* wdhold) {			\
+		openfc(wdhold->WDWRAPPER);			\
+		wdhold->running = true;				\
 	};							\
-	bool ALKC_LOOPWD(ALKC_STDWD wd) {			\
-		loopfc(wd.WDWRAPPER);				\
-		return wd.running;				\
+	bool ALKC_LOOPWD(ALKC_STDWD* wd) {			\
+		loopfc(wd->WDWRAPPER);				\
+		return wd->running;				\
 	};							\
 
 	/**------------------------------------------------------
