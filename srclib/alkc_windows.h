@@ -4,75 +4,70 @@
 #include "../core/alkclib.h"
 #endif
 
-typedef struct STDWD {
-    HWND hwnd; 
-    MSG msg;
-    UINT uMsg;
-    WPARAM wParam;
-    LPARAM lParam;
-} STDWD;
+typedef struct WDHOLDER {
+    HINSTANCE hInstance;  // Handle to the application instance
+    HWND hWnd;            // Handle to the window
+    MSG msg;              // Message/event structure
+    int screen;           // Placeholder, can be removed or repurposed
+} WDHOLDER;
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-STDWD INITWD(int dx, int dy) {
-    printf("init!\n");
-    STDWD wd;
-    const char CLASS_NAME[] = "Sample Window Class";
-
-    WNDCLASS wc = {};
-    wc.lpfnWndProc = WindowProc; 
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.lpszClassName = CLASS_NAME;
-
-    if (!RegisterClass(&wc)) {
-        wd.hwnd = NULL; 
-        printf("Class registration failed!\n");
-        return wd;
+// Window Procedure to handle events (similar to XEvent)
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    default:
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
+}
 
-    wd.hwnd = CreateWindowEx(
-        0,
-        CLASS_NAME,
-        "Hello, Windows!",
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        dx, dy,
-        NULL,
-        NULL,
-        wc.hInstance,
-        NULL
+extern inline WDHOLDER* INITWD(int dx, int dy) {
+    WDHOLDER* wd = (WDHOLDER*)malloc(sizeof(WDHOLDER));
+
+    wd->hInstance = GetModuleHandle(NULL);
+
+    WNDCLASS wc = { 0 };
+    wc.lpfnWndProc = WindowProc;          // Callback function for window events
+    wc.hInstance = wd->hInstance;
+    wc.lpszClassName = "SampleWindowClass";
+
+    RegisterClass(&wc);
+
+    wd->hWnd = CreateWindowEx(
+        0,                              // Optional window styles
+        "SampleWindowClass",            // Window class name
+        "My Windows Application",       // Window title
+        WS_OVERLAPPEDWINDOW,            // Window style
+        CW_USEDEFAULT, CW_USEDEFAULT, dx, dy,  // Position and size
+        NULL,                           // Parent window (if any)
+        NULL,                           // Menu (if any)
+        wd->hInstance,                  // Handle to application instance
+        NULL                            // Additional application data
     );
 
-    if (wd.hwnd == NULL) {
-        printf("Window creation failed!\n"); 
-        wd.hwnd = NULL;
+    if (wd->hWnd == NULL) {
+        free(wd);
+        return NULL;
     }
 
     return wd;
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    switch (uMsg) {
-    case WM_DESTROY:
-        PostQuitMessage(0); 
-        return 0;
-    }
-
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+extern inline void OPENWD(WDHOLDER* wd) {
+    ShowWindow(wd->hWnd, SW_SHOW);
+    UpdateWindow(wd->hWnd);  // Forces a repaint event
+    return;
 }
 
-void OPENWD(STDWD wd) {
-    if (wd.hwnd != NULL) {
-        ShowWindow(wd.hwnd, SW_SHOW); 
-        UpdateWindow(wd.hwnd);        
+extern inline void EXTRACTEVENTS(WDHOLDER* wd) {
+    // Check if there is a message and dispatch it
+    if (GetMessage(&wd->msg, NULL, 0, 0)) {
+        TranslateMessage(&wd->msg);
+        DispatchMessage(&wd->msg);
     }
 }
 
-void EXTRACTEVENTS(STDWD wd) {
-    if (wd.hwnd != NULL) {
-        WindowProc(wd.hwnd, wd.uMsg, wd.wParam, wd.lParam);
-    }
-}
-
-ALKCDEFINE_WDPACKAGE(STDWD, INITWD, OPENWD, EXTRACTEVENTS);
-ALKCDEFINE_EVENTMAPPING(MSG, WPARAM, 60);
+// Here are your macro/definitions (assuming they're similar on Windows)
+ALKCDEFINE_WDPACKAGE(WDHOLDER, INITWD, OPENWD, EXTRACTEVENTS);
+ALKCDEFINE_EVENTMAPPING(MSG, int, 60);
