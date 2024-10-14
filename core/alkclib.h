@@ -5,6 +5,8 @@
 
 //#include "eventlib.h"
 
+#define ALKC_CLIBINITD
+
 #ifndef ALKC_FRONTENDMODE
 
 #include "alkore.h"
@@ -73,8 +75,8 @@
 	 *  	# to the extractor				\
 	 *-----------------------------------------------------*/
 
-#define ALKCDEFINE_WDPACKAGE(WDClass,initfc,	\
-			     openfc, loopfc)			\
+#define ALKCDEFINE_WDPACKAGE(WDClass,initfc, openfc,		\
+	       		     loopfc, renderfc)			\
 								\
 	typedef struct ALKC_STDWD{				\
 		VT_naphtha*	Buffer;				\
@@ -100,6 +102,7 @@
 		return wd->running;				\
 	};							\
 	void ALKC_SWAPBUFFER(ALKC_STDWD* wd,int nDX,int nDY) {	\
+		free(wd->Buffer->naphtArray);			\
 		free(wd->Buffer);				\
 		wd->Buffer = VTINIT_naphtha(nDX,nDY,		\
 					NAPHTBUFFERMODE);	\
