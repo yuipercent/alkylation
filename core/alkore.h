@@ -2,6 +2,15 @@
 #include <stdbool.h>
 #include <xmmintrin.h>
 
+// Rate of buffer adaptation
+//
+#define ALKORE_ROBA_DX 50
+// When the size of the window excedes the
+// buffer's it increases the buffer's dx
+// by this amount
+#define ALKORE_ROBA_DY 25
+// Same but for DY
+
 #define ALKC_COREINITD
 // Used to avoid conflict in case a compatiblity
 // library was included before the core

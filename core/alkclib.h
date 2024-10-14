@@ -3,9 +3,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+//#include "eventlib.h"
+
 #ifndef ALKC_FRONTENDMODE
 
 #include "alkore.h"
+#define NAPHTBUFFERMODE VTINIT_compositeFORMAT(8,0,24,0)
 #endif
 
 #define ALKC_EVENTSAMOUNT 5
@@ -70,9 +73,11 @@
 	 *  	# to the extractor				\
 	 *-----------------------------------------------------*/
 
-#define ALKCDEFINE_WDPACKAGE(WDClass,initfc,openfc,loopfc)	\
+#define ALKCDEFINE_WDPACKAGE(WDClass,initfc,	\
+			     openfc, loopfc)			\
 								\
 	typedef struct ALKC_STDWD{				\
+		VT_naphtha*	Buffer;				\
 		WDClass*	WDWRAPPER;			\
 		bool 		running;			\
 	}ALKC_STDWD;						\
@@ -93,6 +98,11 @@
 	bool ALKC_LOOPWD(ALKC_STDWD* wd) {			\
 		loopfc(wd->WDWRAPPER);				\
 		return wd->running;				\
+	};							\
+	void ALKC_SWAPBUFFER(ALKC_STDWD* wd,int nDX,int nDY) {	\
+		free(wd->Buffer);				\
+		wd->Buffer = VTINIT_naphtha(nDX,nDY,		\
+					NAPHTBUFFERMODE);	\
 	};							\
 
 	/**------------------------------------------------------
