@@ -76,11 +76,16 @@
 	 *-----------------------------------------------------*/
 
 #define ALKCDEFINE_WDPACKAGE(WDClass,initfc, openfc,		\
-	       		     loopfc, renderfc)			\
+	       		     loopfc, dxfx,   dyfx,		\
+			     renderfc)				\
 								\
 	typedef struct ALKC_STDWD{				\
 		VT_naphtha*	Buffer;				\
 		WDClass*	WDWRAPPER;			\
+		int		DX;				\
+		int		DY;				\
+		int		BufferDX;			\
+		int		BufferDY;			\
 		bool 		running;			\
 	}ALKC_STDWD;						\
 								\
@@ -91,23 +96,43 @@
 								\
 		toreturn->WDWRAPPER	 = initfc(dx,dy);	\
 		toreturn->running	 = true;		\
+		toreturn->DX		 = 0;			\
+		toreturn->DY		 = 0;			\
+		toreturn->BufferDX	 = 0;			\
+		toreturn->BufferDY	 = 0;			\
+		toreturn->Buffer	 = VTINIT_naphtha(	\
+					   0,0,NAPHTBUFFERMODE);\
 		return toreturn;				\
 	};							\
 	void ALKC_OPENWD(ALKC_STDWD* wdhold) {			\
 		openfc(wdhold->WDWRAPPER);			\
 		wdhold->running = true;				\
 	};							\
-	bool ALKC_LOOPWD(ALKC_STDWD* wd) {			\
-		loopfc(wd->WDWRAPPER);				\
-		return wd->running;				\
-	};							\
-	void ALKC_SWAPBUFFER(ALKC_STDWD* wd,int nDX,int nDY) {	\
-		free(wd->Buffer->naphtArray);			\
+								\
+	void ALKC_SWAPBUFFER(ALKC_STDWD* wd) {			\
+		VTFREE_naphtArray(wd->Buffer);			\
 		free(wd->Buffer);				\
-		wd->Buffer = VTINIT_naphtha(nDX,nDY,		\
+		wd->Buffer = 					\
+		VTINIT_naphtha(wd->BufferDX,wd->BufferDY,	\
 					NAPHTBUFFERMODE);	\
 	};							\
-
+								\
+	bool ALKC_LOOPWD(ALKC_STDWD* wd) {			\
+		loopfc(wd->WDWRAPPER);				\
+								\
+		int cDX = dxfx(wd->WDWRAPPER);			\
+		int cDY = dyfx(wd->WDWRAPPER);			\
+		wd->DX = cDX;					\
+		wd->DY = cDY;					\
+								\
+		if ((cDX > wd->BufferDX) || 			\
+		(cDY > wd->BufferDY)) {				\
+			wd->BufferDX = wd->DX + ALKORE_ROBA_DX;	\
+			wd->BufferDY = wd->DY + ALKORE_ROBA_DY;	\
+			ALKC_SWAPBUFFER(wd);			\
+		};						\
+		return wd->running;				\
+	};							\
 	/**------------------------------------------------------
 	 * ALKCDEFINE_WDPACKAGE DOCUMENTATION :		\
 	 * ------------------------------------------------------

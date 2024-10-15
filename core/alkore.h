@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
-#include <xmmintrin.h>
+
+#define ALKORE_SIMDOFFSET 128
 
 // Rate of buffer adaptation
 //
@@ -42,7 +44,8 @@
  * Macro : EXtracts the given composite argument
  *
  * Usage : VTEXTRACT_compositeFORMATARGUMENTS(RGB16,BPCAindex);
- * 	Extracts the BitPerColor Argument of RGB16 compFORM
+ *                                                            
+~                            	Extracts the BitPerColor Argument of RGB16 compFORM
  * 0 = GCID,	8 = BPCA,	16 = BFAA,	24 = Amount of bits
  * ---------------------------------------------------------------------*/
 
@@ -91,6 +94,10 @@ VT_naphtha* CNaphtA,const int cFORMAT,int Padding);				//
 										//
 VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT);		//
 // Usage : VT_naphtha RandomVariable = VTINIT_naphtha(120,90,RGBA32);		//
+										//
+bool VTFREE_naphtArray(VT_naphtha* CNaphtA);					//
+// Returns if the function was successful					//
 // -----------------------------------------------------------------------------//
 
 void VTINIT_mallocnapht(VT_naphtha* CNaphtA);
+
