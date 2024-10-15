@@ -11,6 +11,7 @@ typedef struct WDHOLDER{
 	Window WD;
 	XEvent event;
 	int screen;
+	XWindowAttributes InfoHolder;
 }WDHOLDER;
 
 extern inline WDHOLDER* INITWD(int dx, int dy) {
@@ -68,8 +69,24 @@ extern inline void RENDERBUFFER(WDHOLDER* wd,VT_naphtha* Buffer) {
 };
 
 extern inline void EXTRACTEVENTS(WDHOLDER* wd) {
+	XGetWindowAttributes(wd->display,wd->WD,&wd->InfoHolder);
 	XNextEvent(wd->display, &wd->event);
 };
 
-ALKCDEFINE_WDPACKAGE(WDHOLDER,INITWD,OPENWD,EXTRACTEVENTS,RENDERBUFFER);
+extern inline int GETX11DX(WDHOLDER* wd) {
+	return wd->InfoHolder.x;
+};
+
+extern inline int GETX11DY(WDHOLDER* wd) {
+	return wd->InfoHolder.y;
+};
+
+ALKCDEFINE_WDPACKAGE(WDHOLDER,
+		INITWD,
+		OPENWD,
+		EXTRACTEVENTS,
+		GETX11DX,
+		GETX11DY,
+		RENDERBUFFER);
+
 ALKCDEFINE_EVENTMAPPING(XEvent,int,60);
