@@ -4,7 +4,7 @@
 int main() {
 	ALKC_STDWD* wd = ALKC_INITWD(250,480);
 	ALKC_OPENWD(wd);
-	napht test = VTINIT_naphtha(250,5,RGB);
+	napht* test = VTINIT_naphtha(250,5,RGB);
 	while (ALKC_LOOPWD(wd)) {
 		
 	};
