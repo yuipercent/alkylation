@@ -2,13 +2,18 @@
 
 //--------------------------- AFFILIATED FUNCTIONS -----------------------------//
 										//
+static inline struct compositeFORMAT VTINIT_compositeSCHEM(const int cFORMAT) {	//
+	struct compositeFORMAT CFormat;						//
+	CFormat.GCID = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,0);		//
+	CFormat.BPCA = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,16);		//
+	CFormat.BFAA = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,24);		//
+	CFormat.Size = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,8);		//
+	return CFormat;								//
+};										//
 static void VTINIT_naphtArrayFORMAT(						//
 VT_naphtha* CNaphtA,const int cFORMAT,int Padding) {				//
+	CNaphtA->FORMAT = VTINIT_compositeSCHEM(cFORMAT);			//
 										//
-	CNaphtA->FORMAT.GCID = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,0);	//
-	CNaphtA->FORMAT.BPCA = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,8);	//
-	CNaphtA->FORMAT.BFAA = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,16);	//
-	CNaphtA->FORMAT.Size = VTEXTRACT_compositeFORMATARGUMENTS(cFORMAT,24);	//
 	int ldx = CNaphtA->DX;							//
 	int ldy = CNaphtA->DY;							//
 	int lSize = CNaphtA->FORMAT.Size;					//
@@ -18,9 +23,9 @@ VT_naphtha* CNaphtA,const int cFORMAT,int Padding) {				//
 	CNaphtA->padding	 = Padding;					//
 	CNaphtA->naphtarray_size = (CNaphtA->padding + lSize ) * ldx * ldy;	//
 										//
-	CNaphtA->offsetX	 = ( ALKORE_SIMDOFFSET - 			//
-	( CNaphtA->naphtarray_size % ALKORE_SIMDOFFSET ));			//
-	if (CNaphtA->offsetX == ALKORE_SIMDOFFSET) {				//
+	CNaphtA->offsetX	 = ( _ALKR_REGSZ - 				//
+	( CNaphtA->naphtarray_size % _ALKR_REGSZ ));				//
+	if (CNaphtA->offsetX == _ALKR_REGSZ) {					//
 		CNaphtA->offsetX = 0;						//
 	};									//
 };										//
