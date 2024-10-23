@@ -1,6 +1,6 @@
 #include "alkore.h"
 
-//--------------------------- AFFILIATED FUNCTIONS -----------------------------//
+//-------------------- VISUAL SYSTEM AFFILIATED FUNCTIONS ----------------------//
 										//
 static inline struct compositeFORMAT VTINIT_compositeSCHEM(const int cFORMAT) {	//
 	struct compositeFORMAT CFormat;						//
@@ -21,11 +21,12 @@ VT_naphtha* CNaphtA,const int cFORMAT,int Padding) {				//
 	CNaphtA->FORMAT.StorageFormat = cFORMAT;				//
 	CNaphtA->bytes_per_line	 = ( lSize ) * ldx;				//
 	CNaphtA->padding	 = Padding;					//
-	CNaphtA->naphtarray_size = (CNaphtA->padding + lSize ) * ldx * ldy;	//
+	CNaphtA->bytes_per_pixel = (CNaphtA->padding + lSize) >> 3;		//
+	CNaphtA->naphtarray_size = (CNaphtA->bytes_per_pixel) * ldx * ldy;	//
 										//
-	CNaphtA->offsetX	 = ( _ALKR_REGSZ - 				//
-	( CNaphtA->naphtarray_size % _ALKR_REGSZ ));				//
-	if (CNaphtA->offsetX == _ALKR_REGSZ) {					//
+	CNaphtA->offsetX	 = ( _ALKRS_REGSZ - 				//
+	( CNaphtA->naphtarray_size % _ALKRS_REGSZ ));				//
+	if (CNaphtA->offsetX == _ALKRS_REGSZ) {					//
 		CNaphtA->offsetX = 0;						//
 	};									//
 };										//
@@ -54,3 +55,4 @@ bool VTFREE_naphtArray(VT_naphtha* CNaphtA) {
 void VTINIT_mallocnapht(VT_naphtha* CNaphtA) {
 	CNaphtA->naphtArray = malloc(CNaphtA->naphtarray_size);
 };
+

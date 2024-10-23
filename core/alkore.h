@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 /** ----------------------------------------------------
  * Sets the environments variables for pre processing
  * of naphtha code
@@ -17,21 +18,39 @@
 #define _ALKR_SIMDMODE 1
 
 #ifdef __AVX__
+	#include <immintrin.h>
+        #define _ALKRS_REGTYPEF __m256
+	#define _ALKRS_REGTYPEI __m256i
+	#define _ALKRS_SETZERO _mm256_setzero_si256
+	#define _ALKRS_LOADVALUE _mm256_loadu_si256
+	#define _ALKRS_STOREVALUE _mm256_storeu_si256
+	#define _ALKRS_DO_OR _mm256_or_si256
+	#define _ALKRS_DO_SHIFTL _mm256_slli_epi64
+        #define _ALKRS_REGSZ 32
 
-        #include <immintrin.h>
-        #define _ALKR_REGTYPE __m256
-        #define _ALKR_REGSZ 32
 #else
+        #define _ALKRS_REGTYPEF __m128
+	#define _ALKRS_REGTYPEI __m128i
+	#define _ALKRS_SETZERO _mm_setzero_si128
+	#define _ALKRS_LOADVALUE _mm_loadu_si128
+	#define _ALKRS_STOREVALUE _mm_storeu_si128
+	#define _ALKRS_DO_OR _mm_or_si128
+	#define _ALKRS_DO_SHIFTL _mm_slli_epi64
+        #define _ALKRS_REGSZ 16
 
-        #define _ALKR_REGTYPE __m128
-        #define _ALKR_REGSZ 16
 #endif
 
 #else
 
-#define _ALKR_SIMDMODE 0
-#define _ALKR_REGTYPE uint64_t
-#define _ALKR_REGSZ 8
+#define _ALKRS_SIMDMODE 0
+#define _ALKRS_REGTYPEF double float
+#define _ALKRS_REGTYPEI uint64_t
+#define _ALKRS_SETZERO() (uint64_t)0;
+#define _ALKRS_LOADVALUE(PtrValue) ((uint64_t*)PtrValue)[0]
+#define _ALKRS_DO_OR(a,b) (a | b)
+#define _ALKRS_DO_SHIFTL(a,b) (a << b)
+#define _ALKRS_REGSZ 8
+
 #endif
 
  #ifdef _POSIX_THREADS 
@@ -43,12 +62,9 @@
 #define _ALKR_PARAMODE 0
 #endif
 
-#define _ALKR_ASINTRINSICS(VarName,Color)		 \
-	_ALKR_REGTYPE VarName = (_ALKR_REGTYPE)0;	 \
-	for (int fill = 0; fill < Color.Size/8; ++fill) {\
-	}
-
-// -------------------------------------------------------
+/** ================ ALKORE SIMD IMPLEMENTATION DOC ==================//
+ * */
+// --------------------------------------------------------------
 //
 // Rate of buffer adaptation
 
@@ -57,13 +73,13 @@
 // buffer's it increases the buffer's dx
 // by this amount
 #define ALKORE_ROBA_DY 25
-// Same but for DY
+// Same btbh viens on se suicide ut for DY
 
 #define ALKC_COREINITD
 // Used to avoid conflict in case a compatiblity
 // library was included before the core
 
-#define VTINIT_compositeFORMAT(BitPerColor,BitForAlpha,BitsAmount,GCID)	\
+#define VTINIT_compositeFORMAT(BitPerColor,BitForAlpha,BitsAmount,GCID)		\
 	((BitPerColor)<<(24) | ((BitForAlpha)<<(16)) | ((BitsAmount)<<(8)) | (GCID))
 /** ----------------------- compositeFORMAT -------------------------
  * MAcro: Defines a compositeFORMAT as a global compile time constant
@@ -121,10 +137,10 @@ static struct compositeFORMAT{							//
 	unsigned char Size;		// Amount of bits per pixel		//
 	unsigned char GCID;		// GLobal caracterizing identifier	//
 	unsigned int StorageFormat;	// Total int for internal processing	//
-	_ALKR_REGTYPE IntriReg;							//
 }compositeFORMAT;								//
 typedef struct VT_naphtha {							//
 	bool LOCK;								//
+	int bytes_per_pixel;							//
 	int DX;									//
 	int DY;									//
 	int offsetX;								//
