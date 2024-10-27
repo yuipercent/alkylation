@@ -47,6 +47,7 @@
 #define _ALKRS_REGTYPEI uint64_t
 #define _ALKRS_SETZERO() (uint64_t)0;
 #define _ALKRS_LOADVALUE(PtrValue) ((uint64_t*)PtrValue)[0]
+#define _ALKRS_STOREVALUE(PtrValue,PasteValue) PtrValue[0] = PasteValue
 #define _ALKRS_DO_OR(a,b) (a | b)
 #define _ALKRS_DO_SHIFTL(a,b) (a << b)
 #define _ALKRS_REGSZ 8
@@ -68,49 +69,16 @@
 //
 // Rate of buffer adaptation
 
-#define ALKORE_ROBA_DX 50
+#define ALKORE_ROBA_DX 100
 // When the size of the window excedes the
 // buffer's it increases the buffer's dx
 // by this amount
-#define ALKORE_ROBA_DY 25
+#define ALKORE_ROBA_DY 70
 // Same btbh viens on se suicide ut for DY
 
 #define ALKC_COREINITD
 // Used to avoid conflict in case a compatiblity
 // library was included before the core
-
-#define VTINIT_compositeFORMAT(BitPerColor,BitForAlpha,BitsAmount,GCID)		\
-	((BitPerColor)<<(24) | ((BitForAlpha)<<(16)) | ((BitsAmount)<<(8)) | (GCID))
-/** ----------------------- compositeFORMAT -------------------------
- * MAcro: Defines a compositeFORMAT as a global compile time constant
- *
- * Usage : VTDEFINE_compositeFORMAT(RGB,8,0,24,0);
- * 	Defines a compositeFORMAT named RGB with 8 bits per color
- * 	which uses 0 bits for alpha, stored on a total of 24 bits
- * 	and of global caracterizing identifier 0 ( The global color
- * 	format ID, for example RGB or LCH )
- *
- * ----------------------------------------------------------------
- *
- * Storage FOrmat : Stored as unsigned const int divided in 4
- * Bits 0-7	 allocated to GCID
- * Bits 8-15	 allocated to Global bits amount argument
- * Bits 16-23	 allocated to BitPerColor argument
- * Bits 24-31	 allocated to BitForAlpha argument
- * 
- * ----------------------------------------------------------------*/ 
-
-#define VTEXTRACT_compositeFORMATARGUMENTS(Name,STBIT) (((Name)>>(STBIT))%256)
-/** ----------------------- compositeEXTRACTION --------------------------
- *
- * Macro : EXtracts the given composite argument
- *
- * Usage : VTEXTRACT_compositeFORMATARGUMENTS(RGB16,BPCAindex);
- *                                                            
-~                            	Extracts the BitPerColor Argument of RGB16 compFORM
- * 0 = GCID,	8 = Amount of bits,	16 = BPCA,	24 = BFAA
- * ---------------------------------------------------------------------*/
-
 
 #define VTDEFINE_compositePROTOCOLS(ColorFormatAmount)\
 	int VTCONST_compositePROTOCOLS[(ColorFormatAmount)*(ColorFormatAmount)];
@@ -125,26 +93,20 @@
  *
  * -------------------------------------------------------------------*/
 
-#define VTDEFINE_DEFAULTPRESETS()				\
-	VTDEFINE_compositeFORMAT(RGBA32,8,8,32,0);		\
-	VTDEFINE_compositeFORMAT(RGB,8,0,24,0);			
-
 //=============================== NAPHTHA ======================================//
 										//
-static struct compositeFORMAT{							//
+extern struct compositeFORMAT{							//
 	unsigned char BPCA;		// Bit per color argument		//
 	unsigned char BFAA;		// Bit per alpha argument		//
-	unsigned char Size;		// Amount of bits per pixel		//
+	unsigned char Size;		// Amount of bytes per pixel		//
 	unsigned char GCID;		// GLobal caracterizing identifier	//
-	unsigned int StorageFormat;	// Total int for internal processing	//
+	unsigned char padding;							//
 }compositeFORMAT;								//
 typedef struct VT_naphtha {							//
 	bool LOCK;								//
-	int bytes_per_pixel;							//
 	int DX;									//
 	int DY;									//
 	int offsetX;								//
-	int padding;								//
 	int bytes_per_line;							//
         void* naphtArray;							//
 	int naphtarray_size;							//
@@ -152,10 +114,10 @@ typedef struct VT_naphtha {							//
 }VT_naphtha;									//
 //--------------------------- AFFILIATED FUNCTIONS -----------------------------//
 										//
-static void VTINIT_naphtArrayFORMAT(						//
-VT_naphtha* CNaphtA,const int cFORMAT,int Padding);				//
+extern void VTINIT_naphtFORMAT(							//
+VT_naphtha* CNaphtA,struct compositeFORMAT cFORMAT);				//
 										//
-VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,const int cFORMAT);		//
+VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,struct compositeFORMAT cFORMAT);	//
 // Usage : VT_naphtha RandomVariable = VTINIT_naphtha(120,90,RGBA32);		//
 										//
 bool VTFREE_naphtArray(VT_naphtha* CNaphtA);					//
@@ -163,4 +125,8 @@ bool VTFREE_naphtArray(VT_naphtha* CNaphtA);					//
 // -----------------------------------------------------------------------------//
 
 void VTINIT_mallocnapht(VT_naphtha* CNaphtA);
+
+extern void VT_naphtLock(VT_naphtha* CNaphtA);
+
+extern void VT_naphTestLock(VT_naphtha* CNaphtA);
 
