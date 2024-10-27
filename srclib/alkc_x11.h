@@ -32,54 +32,56 @@ extern inline void OPENWD(WDHOLDER* wd) {
         return;
 };
 
-extern inline void RENDERBUFFER(WDHOLDER* wd,VT_naphtha* Buffer) {
-	// This looks so messy help me please
-	XImage *Intermediary = XCreateImage(
-		wd->display,
-		// Specifies the connection to the X server. 
-		DefaultVisual(wd->display,wd->screen),
-		// Specifies the Visual structure. 
-		Buffer->FORMAT.Size,
-		// Specifies the depth of the image. 
-		ZPixmap,
-		// Specifies the format for the image. 
-		0,
-		// Specifies the number of pixels to ignore
-		// at the beginning of the scanline. 
-		(char*) Buffer->naphtArray,
-		// Specifies the image data. 
-		Buffer->DX,
-		// Specifies the X dimension
-		Buffer->DY,
-		// Specifies the Y dimension
-		32,
-		// Specifies the quantum of a scanline
-		0);
-		// Specifies the number of bytes in the client
-		// image between the start of one scanline
-		// and the start of the next. 
-
-	GC gc = XCreateGC(wd->display,wd->WD,0,NULL);
-	XPutImage(wd->display,wd->WD,gc,Intermediary,
-	0, 0, 0, 0,Buffer->DX,Buffer->DY);
-
-	// Clear intermediary objects memory
-	XDestroyImage(Intermediary);
-	XFreeGC(wd->display,gc);
-};
-
 extern inline void EXTRACTEVENTS(WDHOLDER* wd) {
-	XGetWindowAttributes(wd->display,wd->WD,&wd->InfoHolder);
 	XNextEvent(wd->display, &wd->event);
+	XGetWindowAttributes(wd->display,wd->WD,&wd->InfoHolder);
 };
 
 extern inline int GETX11DX(WDHOLDER* wd) {
-	return wd->InfoHolder.x;
+	return wd->InfoHolder.width;
 };
 
 extern inline int GETX11DY(WDHOLDER* wd) {
-	return wd->InfoHolder.y;
+	return wd->InfoHolder.height;
 };
+
+extern inline void RENDERBUFFER(WDHOLDER* wd, VT_naphtha* Buffer, int wdDX, int wdDY) {
+	int sz = (Buffer->FORMAT.Size - Buffer->FORMAT.padding);
+	int bytes_per_line = wdDX * sz;  // Ensure correct alignment
+	int depth = DefaultDepth(wd->display, wd->screen);
+
+	XImage *Intermediary = XCreateImage(
+        	wd->display,
+        	DefaultVisual(wd->display, wd->screen),
+        	depth,
+        	ZPixmap,         // Use ZPixmap for pixel data format
+        	0,               // No offset
+        	(char*) Buffer->naphtArray,  // The pixel data
+        	wdDX, wdDY,      // Width and height
+        	32,              // Bitmap pad, often 32 for TrueColor
+        	0  // Bytes per line to align each scanline
+	);
+
+	if (!Intermediary) {
+		fprintf(stderr, "Failed to create XImage.\n");
+		return;
+	}
+
+	GC gc = XCreateGC(wd->display, wd->WD, 0, NULL);
+	if (!gc) {
+		fprintf(stderr, "Failed to create graphics context.\n");
+		Intermediary->data = NULL;
+		XDestroyImage(Intermediary);
+		return;
+	}
+	XPutImage(wd->display, wd->WD, gc, Intermediary,
+        0, 0, 0, 0, Buffer->DX, Buffer->DY);
+
+	// Clean up
+	Intermediary->data = NULL;
+	XDestroyImage(Intermediary);
+	XFreeGC(wd->display, gc);
+}
 
 ALKCDEFINE_WDPACKAGE(WDHOLDER,
 		INITWD,
