@@ -45,10 +45,11 @@ extern inline int GETX11DY(WDHOLDER* wd) {
 	return wd->InfoHolder.height;
 };
 
-extern inline void RENDERBUFFER(WDHOLDER* wd, VT_naphtha* Buffer, int wdDX, int wdDY) {
-	int sz = (Buffer->FORMAT.Size - Buffer->FORMAT.padding);
-	int bytes_per_line = wdDX * sz;  // Ensure correct alignment
+extern inline void RENDERBUFFER(WDHOLDER* wd, WDinfo* attrs) {
+	int sz = (attrs->format.Size - attrs->format.padding);
+	int bytes_per_line = attrs->dx * sz;  // Ensure correct alignment
 	int depth = DefaultDepth(wd->display, wd->screen);
+	printf("Rendering based on sizes : %d;%d\n",attrs->dx,attrs->dy);
 
 	XImage *Intermediary = XCreateImage(
         	wd->display,
@@ -56,10 +57,10 @@ extern inline void RENDERBUFFER(WDHOLDER* wd, VT_naphtha* Buffer, int wdDX, int 
         	depth,
         	ZPixmap,         // Use ZPixmap for pixel data format
         	0,               // No offset
-        	(char*) Buffer->naphtArray,  // The pixel data
-        	wdDX, wdDY,      // Width and height
+        	(char*) attrs->buffer->naphtArray,  // The pixel data
+        	attrs->dx, attrs->dy,      // Width and height
         	32,              // Bitmap pad, often 32 for TrueColor
-        	0  // Bytes per line to align each scanline
+        	(attrs->dx) * attrs->format.Size  // Bytes per line to align each scanline
 	);
 
 	if (!Intermediary) {
@@ -75,7 +76,7 @@ extern inline void RENDERBUFFER(WDHOLDER* wd, VT_naphtha* Buffer, int wdDX, int 
 		return;
 	}
 	XPutImage(wd->display, wd->WD, gc, Intermediary,
-        0, 0, 0, 0, Buffer->DX, Buffer->DY);
+        0, 0, 0, 0, attrs->dx, attrs->dy);
 
 	// Clean up
 	Intermediary->data = NULL;
