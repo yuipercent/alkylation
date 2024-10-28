@@ -124,6 +124,20 @@ bool VTFREE_naphtArray(VT_naphtha* CNaphtA);					//
 // Returns if the function was successful					//
 // -----------------------------------------------------------------------------//
 
+// --< Core datas of a window >---------//
+//					//
+typedef struct WDinfo{			//
+	int dx;				//
+	int dy;				//
+	VT_naphtha* buffer;		//
+	struct compositeFORMAT format;	//
+}WDinfo;				//
+//					//
+// -------------------------------------//
+// Since ALKC_STDWD is only determined at
+// compilation this serves as a standardized
+// data holder for all modules
+
 void VTINIT_mallocnapht(VT_naphtha* CNaphtA);
 
 extern void VT_naphtLock(VT_naphtha* CNaphtA);

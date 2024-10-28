@@ -85,15 +85,11 @@ typedef struct ALKC_WDconfig{
 			     renderfc)				\
 								\
 	typedef struct ALKC_STDWD{				\
-		VT_naphtha*	Buffer;				\
 		WDClass*	WDWRAPPER;			\
 		bool 		running;			\
-		int		DX;				\
-		int		DY;				\
 		int		BufferDX;			\
 		int		BufferDY;			\
-		struct						\
-		compositeFORMAT cFORMAT;			\
+		WDinfo		attr;				\
 	}ALKC_STDWD;						\
 								\
 	ALKC_STDWD* ALKC_INITWD					\
@@ -103,42 +99,43 @@ typedef struct ALKC_WDconfig{
 								\
 		toreturn->WDWRAPPER	 = initfc(dx,dy);	\
 		toreturn->running	 = true;		\
-		toreturn->DX		 = 0;			\
-		toreturn->DY		 = 0;			\
+		toreturn->attr.dx	 = 0;			\
+		toreturn->attr.dy	 = 0;			\
 		toreturn->BufferDX	 = dx;			\
 		toreturn->BufferDY	 = dy;			\
-		toreturn->Buffer	 = VTINIT_naphtha(dx,dy,config);	\
-		toreturn->cFORMAT	 = config;		\
+		toreturn->attr.buffer	 = VTINIT_naphtha(dx,dy,config);\
+		toreturn->attr.format	 = config;		\
 		return toreturn;				\
 	};							\
 	void ALKC_OPENWD(ALKC_STDWD* wdhold) {			\
 		openfc(wdhold->WDWRAPPER);			\
-		VT_naphTestLock(wdhold->Buffer);		\
+		VT_naphTestLock(wdhold->attr.buffer);		\
 		wdhold->running = true;				\
 	};							\
 								\
 	void ALKC_SWAPBUFFER(ALKC_STDWD* wd) {			\
-		bool a = VTFREE_naphtArray(wd->Buffer);		\
-		free(wd->Buffer);				\
-		wd->Buffer = VTINIT_naphtha(			\
-		wd->BufferDX,wd->BufferDY,wd->cFORMAT);		\
+		bool a = VTFREE_naphtArray(wd->attr.buffer);	\
+		free(wd->attr.buffer);				\
+		wd->attr.buffer = VTINIT_naphtha(		\
+		wd->BufferDX,wd->BufferDY,wd->attr.format);	\
 	};							\
 								\
 	bool ALKC_LOOPWD(ALKC_STDWD* wd) {			\
+								\
+		renderfc(wd->WDWRAPPER,&wd->attr);		\
 		loopfc(wd->WDWRAPPER);				\
 								\
 		int cDX = dxfx(wd->WDWRAPPER);			\
 		int cDY = dyfx(wd->WDWRAPPER);			\
-		wd->DX = cDX;					\
-		wd->DY = cDY;					\
+		wd->attr.dx = cDX;				\
+		wd->attr.dy = cDY;				\
 								\
 		if ((cDX > wd->BufferDX) || 			\
 		(cDY > wd->BufferDY)) {				\
-			wd->BufferDX = wd->DX + ALKORE_ROBA_DX;	\
-			wd->BufferDY = wd->DY + ALKORE_ROBA_DY;	\
+			wd->BufferDX = wd->attr.dx + ALKORE_ROBA_DX;\
+			wd->BufferDY = wd->attr.dy + ALKORE_ROBA_DY;\
 			ALKC_SWAPBUFFER(wd);			\
 		};						\
-		renderfc(wd->WDWRAPPER,wd->Buffer,cDX,cDY);	\
 		return wd->running;				\
 	};							\
 	/**------------------------------------------------------
