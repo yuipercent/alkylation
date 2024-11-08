@@ -1,7 +1,7 @@
 # alkylFW
 Alkylation development framework:
 A lightweight 2D platform independant portable graphics rendering library with integrated software development librairies
-Based on the KISS (Keep It Stupid Simple) principle, standard features only include basic rendering utilities.
+Based on the KISS (Keep It Stupid Simple) principle, standard features only include basic rendering utilities, Pixmaps and TrueType fonts rendering.
 
 Staff:
 * Project header & developper : yuipercent
