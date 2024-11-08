@@ -1,27 +1,26 @@
 #include "srclib/alkc_x11.h"
 #include "alkylfw.h"
-#include <immintrin.h>
-#include <xmmintrin.h>
-#include <emmintrin.h>
 
 int main() {
 	ALKC_STDWD* wd = ALKC_INITWD(250,400,RGB32);
 	//naphtFORMAT(wd->Buffer,RGB,8);
 	ALKC_OPENWD(wd);
 	naphtRect rect;
-	naphtRect clearance;
-	clearance.PX = 0;
-	clearance.PY = 0;
-	clearance.DX = 150;
-	clearance.DY = 150;
-	rect.PX = 10;
-	rect.PY = 20;
+	naphtEllipse clearance;
+	clearance.px = 100;
+	clearance.py = 100;
+	clearance.eccentricity = 50;
+	clearance.coefX = 1;
+	clearance.coefY = 2;
+	rect.px = 10;
+	rect.py = 20;
 	//naphTools_FILLRECT(wd->Buffer,rect,1194876);
 	while (ALKC_LOOPWD(wd)) {
-		rect.DX = 40;
-		rect.DY = 40;
+		rect.dx = 40;
+		rect.dy = 40;
 		//naphTools_FILLRECT(&wd->attr,clearance,948410);
-		naphTools_FILLRECT(&wd->attr,rect,640);
+		//naphTools_FILLRECT(wd->attr.buffer,rect,640);
+		naphTools_FILLELLIPSE(wd->attr.buffer,clearance,640);
 	};
 	return 0;
 };
