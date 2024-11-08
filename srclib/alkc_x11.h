@@ -49,7 +49,7 @@ extern inline void RENDERBUFFER(WDHOLDER* wd, WDinfo* attrs) {
 	int sz = (attrs->format.Size - attrs->format.padding);
 	int bytes_per_line = attrs->dx * sz;  // Ensure correct alignment
 	int depth = DefaultDepth(wd->display, wd->screen);
-	printf("Rendering based on sizes : %d;%d\n",attrs->dx,attrs->dy);
+	//printf("Rendering based on sizes : %d;%d\n",attrs->dx,attrs->dy);
 
 	XImage *Intermediary = XCreateImage(
         	wd->display,
