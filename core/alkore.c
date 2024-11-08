@@ -5,11 +5,11 @@
 extern void VTINIT_naphtFORMAT							//
 (VT_naphtha* CNaphtA,struct compositeFORMAT cFORMAT) {				//
 										//
-	CNaphtA->FORMAT		 = cFORMAT;					//
+	CNaphtA->format		 = cFORMAT;					//
 										//
-	int ldx = CNaphtA->DX;							//
-	int ldy = CNaphtA->DY;							//
-	int lSize 		 = CNaphtA->FORMAT.Size;			//
+	int ldx = CNaphtA->dx;							//
+	int ldy = CNaphtA->dy;							//
+	int lSize 		 = CNaphtA->format.Size;			//
 	//printf("lSize = %d | ldx = %d | ldy = %d\n",lSize,ldx,ldy);		//
 										//
 	CNaphtA->bytes_per_line	 = ( lSize ) * ldx;				//
@@ -22,16 +22,16 @@ extern void VTINIT_naphtFORMAT							//
 	};									//
 										//
 	CNaphtA->naphtArray = malloc(CNaphtA->naphtarray_size);			//
-	CNaphtA->LOCK = false;							//
+	CNaphtA->lock = false;							//
 };										//
 
 VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,struct compositeFORMAT cFORMAT) {
 	VT_naphtha* CNaphtA =
 	(VT_naphtha*)malloc(sizeof(VT_naphtha));
 
-	CNaphtA->LOCK 	= true;
-	CNaphtA->DX 	= sizeX;
-	CNaphtA->DY 	= sizeY;
+	CNaphtA->lock 	= true;
+	CNaphtA->dx 	= sizeX;
+	CNaphtA->dy 	= sizeY;
 
 	VTINIT_naphtFORMAT(CNaphtA,cFORMAT);
 	return CNaphtA;
@@ -40,9 +40,9 @@ VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,struct compositeFORMAT cFORMAT) {
 // Usage : VT_naphtha RandomVariable = VTINIT_naphtha(120,90,RGBA32);		//
 
 bool VTFREE_naphtArray(VT_naphtha* CNaphtA) {
-	if (CNaphtA->LOCK == false) {
+	if (CNaphtA->lock == false) {
 		free(CNaphtA->naphtArray);
-		CNaphtA->LOCK = true;
+		CNaphtA->lock = true;
 		CNaphtA->naphtArray = NULL;
 		return true;
 	};
@@ -53,11 +53,11 @@ bool VTFREE_naphtArray(VT_naphtha* CNaphtA) {
 // -----------------------------------------------------------------------------//
 
 void VT_naphtLock(VT_naphtha* CNaphtA) {
-	CNaphtA->LOCK = !CNaphtA->LOCK;
+	CNaphtA->lock = !CNaphtA->lock;
 };
 
 void VT_naphTestLock(VT_naphtha* CNaphtA) {
-        if (CNaphtA->LOCK) {
+        if (CNaphtA->lock) {
                 printf("Segmentation Fault (core dumped) : \n[Alkylation]: illegal access to     napht attributes while locked.\n");
                 exit(139);
         };

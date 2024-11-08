@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+
 /** ----------------------------------------------------
  * Sets the environments variables for pre processing
  * of naphtha code
@@ -11,56 +12,9 @@
  * -> _ALKR_REGTYPE  : type, the type of the SIMD registers
  * -> _ALKR_REGSZ    : int,  size in bytes of the REGTYPE */
 
-#ifdef __SSE__
-
-#include <xmmintrin.h>
-#include <emmintrin.h>
-#define _ALKR_SIMDMODE 1
-
-#ifdef __AVX__
-	#include <immintrin.h>
-        #define _ALKRS_REGTYPEF __m256
-	#define _ALKRS_REGTYPEI __m256i
-	#define _ALKRS_SETZERO _mm256_setzero_si256
-	#define _ALKRS_LOADVALUE _mm256_loadu_si256
-	#define _ALKRS_STOREVALUE _mm256_storeu_si256
-	#define _ALKRS_DO_OR _mm256_or_si256
-	#define _ALKRS_DO_SHIFTL _mm256_slli_epi64
-        #define _ALKRS_REGSZ 32
-
-#else
-        #define _ALKRS_REGTYPEF __m128
-	#define _ALKRS_REGTYPEI __m128i
-	#define _ALKRS_SETZERO _mm_setzero_si128
-	#define _ALKRS_LOADVALUE _mm_loadu_si128
-	#define _ALKRS_STOREVALUE _mm_storeu_si128
-	#define _ALKRS_DO_OR _mm_or_si128
-	#define _ALKRS_DO_SHIFTL _mm_slli_epi64
-        #define _ALKRS_REGSZ 16
-
-#endif
-
-#else
-
-#define _ALKRS_SIMDMODE 0
-#define _ALKRS_REGTYPEF double float
-#define _ALKRS_REGTYPEI uint64_t
-#define _ALKRS_SETZERO() (uint64_t)0;
-#define _ALKRS_LOADVALUE(PtrValue) ((uint64_t*)PtrValue)[0]
-#define _ALKRS_STOREVALUE(PtrValue,PasteValue) PtrValue[0] = PasteValue
-#define _ALKRS_DO_OR(a,b) (a | b)
-#define _ALKRS_DO_SHIFTL(a,b) (a << b)
-#define _ALKRS_REGSZ 8
-
-#endif
-
- #ifdef _POSIX_THREADS 
-
-#include <pthread.h>
-#define _ALKR_PARAMODE 1
-#else
-
-#define _ALKR_PARAMODE 0
+#ifndef _ALKR_SIMD_CONTEXTCLIB
+#include "simdclib.h"
+#define _ALKR_SIMD_CONTEXTCLIB
 #endif
 
 /** ================ ALKORE SIMD IMPLEMENTATION DOC ==================//
@@ -103,14 +57,14 @@ extern struct compositeFORMAT{							//
 	unsigned char padding;							//
 }compositeFORMAT;								//
 typedef struct VT_naphtha {							//
-	bool LOCK;								//
-	int DX;									//
-	int DY;									//
+	bool lock;								//
+	int dx;									//
+	int dy;									//
 	int offsetX;								//
 	int bytes_per_line;							//
         void* naphtArray;							//
 	int naphtarray_size;							//
-	struct compositeFORMAT FORMAT;						//
+	struct compositeFORMAT format;						//
 }VT_naphtha;									//
 //--------------------------- AFFILIATED FUNCTIONS -----------------------------//
 										//

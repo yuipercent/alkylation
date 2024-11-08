@@ -129,6 +129,8 @@ typedef struct ALKC_WDconfig{
 		int cDY = dyfx(wd->WDWRAPPER);			\
 		wd->attr.dx = cDX;				\
 		wd->attr.dy = cDY;				\
+		wd->attr.buffer->dx = cDX;			\
+		wd->attr.buffer->dy = cDY;			\
 								\
 		if ((cDX > wd->BufferDX) || 			\
 		(cDY > wd->BufferDY)) {				\
