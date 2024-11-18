@@ -1,8 +1,19 @@
-#include <stdint.h>
-
 #define ALKC_FRONTENDMODE
-// Used to know wether alkore.h is being defined
-// in frontend or backend to avoid conflict
+
+// --< OS specific library include >----//
+//					//
+#ifdef _WIN32				//
+#include "srclib/alkc_windows.h"	//
+#endif					//
+					//
+#ifdef __unix				//
+#include "srclib/alkc_x11.h"		//
+#endif					//
+					//
+#ifdef __APPLE__			//
+#include "srclib/alkc_apl.h"		//
+#endif					//
+// -------------------------------------//
 
 #ifndef ALKC_COREINITD
 
@@ -10,7 +21,14 @@
 #endif
 
 // ====================================================
+
+#ifndef ALKC_EMBED
+
 #include "plug/naphtools.h"
+#include "plug/naphtfont.h"
+#else
+// Planned lightweight librairies
+#endif
 
 #define STDWD  ALKC_STDWD
 #define InitWD ALKC_INITWD
@@ -30,6 +48,7 @@
 		})
 
 // RGB32 : 8 bit per color, 0 for alpha, 8 padding for 4 bytes
+#ifndef ALKC_EMBED
 #define RGB32 ((const struct compositeFORMAT) {	\
 		.BPCA = 8,			\
 		.BFAA = 0,			\
@@ -50,3 +69,7 @@ enum ALKYLWDconfigs{
 	ALKCDEFAULT = 34493962240,
 	ALKCDEFAULTALPHA = 34494488576
 }ALKYLWDconfigs;
+#else
+
+#define ALKCDEFAULT 34493962240
+#endif
