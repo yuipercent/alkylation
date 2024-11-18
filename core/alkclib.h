@@ -7,11 +7,11 @@
 
 #define ALKC_CLIBINITD
 
-#ifndef ALKC_FRONTENDMODE
-
+#ifndef __ALKORE__
 #include "alkore.h"
-#define NAPHTBUFFERMODE VTINIT_compositeFORMAT(8,0,24,0)
 #endif
+
+#define NAPHTBUFFERMODE VTINIT_compositeFORMAT(8,0,24,0)
 
 typedef struct ALKC_WDconfig{
 	unsigned int composite;
@@ -80,6 +80,21 @@ typedef struct ALKC_WDconfig{
 	 *  	# to the extractor				\
 	 *-----------------------------------------------------*/
 
+// --< Core datas of a window >---------//
+//                                      //
+typedef struct WDinfo{                  //
+	int dx;                         //
+	int dy;                         //
+	VT_naphtha* buffer;             //
+	struct compositeFORMAT format;  //
+}WDinfo;                                //
+//                                      //
+// -------------------------------------//
+// Since ALKC_STDWD is only determined at
+// compilation this serves as a standardized
+// data holder for all modules
+
+
 #define ALKCDEFINE_WDPACKAGE(WDClass,initfc, openfc,		\
 	       		     loopfc, dxfx,   dyfx,		\
 			     renderfc)				\
@@ -114,7 +129,7 @@ typedef struct ALKC_WDconfig{
 	};							\
 								\
 	void ALKC_SWAPBUFFER(ALKC_STDWD* wd) {			\
-		bool a = VTFREE_naphtArray(wd->attr.buffer);	\
+		VTFREE_naphtArray(wd->attr.buffer);		\
 		free(wd->attr.buffer);				\
 		wd->attr.buffer = VTINIT_naphtha(		\
 		wd->BufferDX,wd->BufferDY,wd->attr.format);	\

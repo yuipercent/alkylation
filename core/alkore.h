@@ -31,6 +31,7 @@
 // Same btbh viens on se suicide ut for DY
 
 #define ALKC_COREINITD
+#define __ALKORE__
 // Used to avoid conflict in case a compatiblity
 // library was included before the core
 
@@ -77,20 +78,6 @@ VT_naphtha* VTINIT_naphtha(int sizeX,int sizeY,struct compositeFORMAT cFORMAT);	
 bool VTFREE_naphtArray(VT_naphtha* CNaphtA);					//
 // Returns if the function was successful					//
 // -----------------------------------------------------------------------------//
-
-// --< Core datas of a window >---------//
-//					//
-typedef struct WDinfo{			//
-	int dx;				//
-	int dy;				//
-	VT_naphtha* buffer;		//
-	struct compositeFORMAT format;	//
-}WDinfo;				//
-//					//
-// -------------------------------------//
-// Since ALKC_STDWD is only determined at
-// compilation this serves as a standardized
-// data holder for all modules
 
 void VTINIT_mallocnapht(VT_naphtha* CNaphtA);
 
