@@ -3,7 +3,12 @@ Alkylation development framework:
 A lightweight 2D platform independant portable graphics rendering library with integrated software development librairies
 Based on the KISS (Keep It Stupid Simple) principle, standard features only include basic rendering utilities, Pixmaps and TrueType fonts rendering.
 
-Prioritizes speed over memory efficiency, however a memory efficient implementation is planned in the future for potential embedded systems.
+Prioritizes speed over memory efficiency, currently not suited for embedded system
+
+### Planned:
+* Embedded systems lightweight memory-efficient librairies
+* OpenType font support
+* Python / Rust / C# API
 
 Staff:
 * Project header & developper : yuipercent
