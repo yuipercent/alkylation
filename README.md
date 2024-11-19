@@ -11,6 +11,7 @@ Prioritizes speed over memory efficiency, currently not suited for embedded syst
 * Embedded systems lightweight memory-efficient librairies
 * OpenType font support
 * Python / Rust / C# API
+* GPU acceleration (SIMD for CPU already implemented)
 
 Staff:
 * Project header & developper : yuipercent
@@ -18,7 +19,7 @@ Staff:
 
 ## git structure :
 ### ./
-* alkylfw.h : Main header for the library which includes all standard features
+* alkylfw.h : Main header for the library which includes all standard features, essentially brings together all the other files
 * tester.c  : some random tester files used for testing if all of this works
 
 ### /core :
@@ -28,6 +29,7 @@ Staff:
 
 ### /plug :
 * naphtools : Features of the standard library such as napht blitting, rectangle filling etc...
+* naphtfont : Font rendering standard plugin
 * alkorext  : napht derivatives library
 
 ### /srclib :
@@ -35,4 +37,4 @@ Staff:
 * alkc_windows : Windows compatiblity library
 
 ### /dev :
-random stuff
+random stuff (soon to be deleted)
