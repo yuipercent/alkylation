@@ -11,23 +11,41 @@ extern inline uint32_t _NTFONT_SWAPEND32(uint32_t value) {
            ((value >> 8) & 0xff00) |
            ((value << 24) & 0xff000000);
 }
+
 // this too btw but who cares
 extern inline uint16_t _NTFONT_SWAPEND16(uint16_t value) {
     return (value >> 8) | (value << 8);
 }
 
-extern inline void _NTFONT_FREAD_SWAPEND32(uint32_t* intptr,FILE* cfile) {
-	fread(intptr,4,1,cfile);
-	intptr[0] = _NTFONT_SWAPEND32(intptr[0]);
-	return;
+extern inline void
+_NTFONT_FREAD_WSWAP16(FILE* cfile, uint16_t* cpyMem,uint16_t size) {
+
+	uint16_t buffer = 0x0000;
+	for (int itx = 0; itx < size; ++itx) {
+
+		fread(&buffer,2,1,cfile);
+		cpyMem[itx] = _NTFONT_SWAPEND16(buffer);
+		fseek(cfile,2,SEEK_CUR);
+	};
 };
 
-extern inline void _NTFONT_FREAD_SWAPEND16(uint16_t* intptr,FILE* cfile) {
-	fread(intptr,2,1,cfile);
-	intptr[0] = _NTFONT_SWAPEND16(intptr[0]);
-	return;
+#define _NTFONT_FREAD_LIEND16(cFile,object,offset,size) \
+	_NTFONT_FREAD_WSWAP16(cFile,(uint16_t*)((uint8_t*)object + offset),size/2)
+
+extern inline void
+_NTFONT_FREAD_WSWAP32(FILE* cfile, uint32_t* cpyMem,uint16_t size) {
+
+	uint32_t buffer = 0x00000000;
+	for (int itx = 0; itx < size; ++itx) {
+
+		fread(&buffer,4,1,cfile);
+		cpyMem[itx] = _NTFONT_SWAPEND32(buffer);
+		fseek(cfile,4,SEEK_CUR);
+	};
 };
 
+#define _NTFONT_FREAD_LIEND32(cFile,object,offset,size) \
+	_NTFONT_FREAD_WSWAP32(cFile,(uint32_t*)((uint8_t*)object + offset),size/4)
 // - - - - - - - - - - - - - - - - - - - - - - - -
 // < _NTFONT_ Bezcurv calculation functions > ----
 //
