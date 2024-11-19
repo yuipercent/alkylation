@@ -1,6 +1,5 @@
 # alkylFW
-**/!\ THIS IS A WORK IN PROGRESS
-UNTIL A WORKING RELEASE IS PUBLISHED, YOU WILL PROBABLY NOT BE ABLE TO MAKE THIS WORK UNDER ANY OTHER ENVIRONMENT THAN UNIX**
+**/!\ THIS IS A WORK IN PROGRESS, UNTIL A RELEASE IS PUBLISHED YOU WILL NOT BE ABLE TO MAKE THIS WORK**
 
 Alkylation development framework:
 A lightweight 2D platform independant portable graphics rendering library with integrated software development librairies.
