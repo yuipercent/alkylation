@@ -42,8 +42,8 @@ enum _NTFONT_TABLETYPEINDEX{
 };
 
 enum _NTFONT_TABLEFSFORMAT{
-	_NTFONT_FSF_STORED,
-	_NTFONT_FSF_FSREAD
+	_NTFONT_FSF_STORED = 's',
+	_NTFONT_FSF_FSREAD = 'f'
 };
 
 typedef struct{
@@ -63,6 +63,29 @@ typedef struct{
 	double* coefs;
 	unsigned char order;
 }_NTFONT_BEZCURV;
+
+// -< TABLE STRUCTURES >------------------------------
+//
+typedef struct {
+	uint16_t majorVersion;
+	uint16_t minorVersion;
+	//int32_t  fontRevision;
+	//uint32_t checkSumAdjustment;
+	//uint32_t magicNumber; // Always 0x5F0F3CF5
+	uint16_t flags;
+	uint16_t unitsPerEm;
+	//int64_t  created;
+	//int64_t  modified;
+	int16_t  xMin;
+	int16_t  yMin;
+	int16_t  xMax;
+	int16_t  yMax;
+	uint16_t macStyle;
+	uint16_t lowestRecPPEM;
+	int16_t  fontDirectionHint;
+	int16_t  indexToLocFormat; // 0 = short, 1 = long
+	int16_t  glyphDataFormat;
+} _NTFONT_TABLE_HEAD;
 
 // -< FS Structures >----------
 //
@@ -84,13 +107,15 @@ typedef struct{
 typedef struct{
         _NTFONT_TTHEADER	header;
 	_NTFONT_TABLERECORD*	records;
+	_NTFONT_TABLE_HEAD	table_head;
 
 	uint16_t tablemap;
 	char	 f_lock;
+	char	 read_mode;
 	FILE*	 srcfile;
 }_NTFONT_TTFILE;
 
-extern _NTFONT_TTFILE* _NTFONT_READTTF(const char* folder);
+extern _NTFONT_TTFILE* _NTFONT_READTTF(const char* folder,char read_mode);
 
 void _NTFONT_CLOSE(_NTFONT_TTFILE* cfile);
 
