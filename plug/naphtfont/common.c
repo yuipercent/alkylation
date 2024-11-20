@@ -4,6 +4,16 @@
 
 // ----< Random utils >-------------------
 //
+extern inline uint64_t _NTFONT_SWAPEND64(uint64_t value) {
+    return ((value & 0x00000000000000FFULL) << 56) |
+           ((value & 0x000000000000FF00ULL) << 40) |
+           ((value & 0x0000000000FF0000ULL) << 24) |
+           ((value & 0x00000000FF000000ULL) << 8)  |
+           ((value & 0x000000FF00000000ULL) >> 8)  |
+           ((value & 0x0000FF0000000000ULL) >> 24) |
+           ((value & 0x00FF000000000000ULL) >> 40) |
+           ((value & 0xFF00000000000000ULL) >> 56);
+};
 // ChatGPT function damn its so useful its a war crime
 extern inline uint32_t _NTFONT_SWAPEND32(uint32_t value) {
     return ((value >> 24) & 0xff) |
@@ -17,35 +27,46 @@ extern inline uint16_t _NTFONT_SWAPEND16(uint16_t value) {
     return (value >> 8) | (value << 8);
 }
 
-extern inline void
-_NTFONT_FREAD_WSWAP16(FILE* cfile, uint16_t* cpyMem,uint16_t size) {
+extern void
+_NTFONT_FREAD_WSWAP16(FILE* cfile, uint16_t* cpyMem,int size) {
 
 	uint16_t buffer = 0x0000;
 	for (int itx = 0; itx < size; ++itx) {
 
 		fread(&buffer,2,1,cfile);
 		cpyMem[itx] = _NTFONT_SWAPEND16(buffer);
-		fseek(cfile,2,SEEK_CUR);
 	};
 };
 
 #define _NTFONT_FREAD_LIEND16(cFile,object,offset,size) \
-	_NTFONT_FREAD_WSWAP16(cFile,(uint16_t*)((uint8_t*)object + offset),size/2)
+	_NTFONT_FREAD_WSWAP16(cFile,((uint16_t*)object)+offset,size/2)
 
-extern inline void
-_NTFONT_FREAD_WSWAP32(FILE* cfile, uint32_t* cpyMem,uint16_t size) {
-
+extern void
+_NTFONT_FREAD_WSWAP32(FILE* cfile, uint32_t* cpyMem,int size) {
+	
 	uint32_t buffer = 0x00000000;
 	for (int itx = 0; itx < size; ++itx) {
-
 		fread(&buffer,4,1,cfile);
 		cpyMem[itx] = _NTFONT_SWAPEND32(buffer);
-		fseek(cfile,4,SEEK_CUR);
 	};
 };
 
 #define _NTFONT_FREAD_LIEND32(cFile,object,offset,size) \
-	_NTFONT_FREAD_WSWAP32(cFile,(uint32_t*)((uint8_t*)object + offset),size/4)
+	_NTFONT_FREAD_WSWAP32(cFile,((uint32_t*)object)+offset,size/4)
+
+extern void
+_NTFONT_FREAD_WSWAP64(FILE* cfile, uint64_t* cpyMem,int size) {
+
+	uint64_t buffer = 0x0000000000000000ULL;
+	for (int itx = 0; itx < size; ++itx) {
+
+		fread(&buffer,8,1,cfile);
+		cpyMem[itx] = _NTFONT_SWAPEND64(buffer);
+	};
+};
+
+#define _NTFONT_FREAD_LIEND64(cFile,object,offset,size) \
+	_NTFONT_FREAD_WSWAP64(cFile,((uint64_t*)object)+offset,size/8)
 // - - - - - - - - - - - - - - - - - - - - - - - -
 // < _NTFONT_ Bezcurv calculation functions > ----
 //
